@@ -25,50 +25,87 @@
  */
 
 module powerbi.extensibility.visual {
-    "use strict";
+
+    //Making interface to store data for swift opeation
+    interface ViewModel{
+        Title:string,
+        KeyPages:string,
+        Channels:string,
+        
+    }
+
     export class Visual implements IVisual {
         private target: HTMLElement;
         private updateCount: number;
         private settings: VisualSettings;
         private textNode: Text;
+        private Container: d3.Selection<SVGElement>;
 
         constructor(options: VisualConstructorOptions) {
-            console.log('Visual constructor', options);
             this.target = options.element;
-            this.updateCount = 0;
-            if (typeof document !== "undefined") {
-                const new_p: HTMLElement = document.createElement("p");
-                new_p.appendChild(document.createTextNode("Update count:"));
-                const new_em: HTMLElement = document.createElement("em");
-                this.textNode = document.createTextNode(this.updateCount.toString());
-                new_em.appendChild(this.textNode);
-                new_p.appendChild(new_em);
-                this.target.appendChild(new_p);
-                
-            }
-            d3.select(this.target).append("div");
-            $("div").text('heo');
+
+            //Defining the html container
+            this.Container=d3.select(this.target).append("div").classed("container-fluid",true);
+            //Initializing the rows
+            let row=this.Container.append("div").classed("row",true).attr({'id':'row1'});
+            //Appending the respective data and link divisions
+            row.append("div").classed("col-2 data",true).append("div").classed("title",true).text(".").style({color:'white'}); //This piece of code basic ally creates a empty head
+            row.append("div").classed("col-1 lines",true);
+            row.append("div").classed("col-2 data",true).append("div").classed("title",true).text("Key Pages");
+            row.append("div").classed("col-1 lines",true);
+            row.append("div").classed("col-2 data",true).append("div").classed("title",true).text("Channels");
+            row.append("div").classed("col-1 lines",true);
+            row.append("div").classed("col-2 data",true).append("div").classed("title",true).text("MarketPlace");
+           
+        }
+        //Data inserting code
+        private getViewModel(options: VisualUpdateOptions): ViewModel {
+            //Fetching data
+            let dv = options.dataViews;
+           
+            let DefaultTiles: ViewModel = {
+                Tiles: []
+            };
+
+            //Default Void Check
+            if (!dv
+                || !dv[0]
+                || !dv[0].categorical
+                || !dv[0].categorical.categories
+                || !dv[0].categorical.categories[0].source
+                || !dv[0].categorical.values
+                || !dv[0].metadata)
+                return DefaultTiles;
+
+            //Assigning Quick references
+            let Recruit = dv[0].categorical.categories[0].values;
+            let Develop = dv[0].categorical.categories[1].values;
+            let Launch = dv[0].categorical.categories[2].values;
+            let Grow = dv[0].categorical.categories[3].values;
+            let Direction=dv[0].categorical.categories[4].values;
+            let Metric = dv[0].categorical.values[0].values;
+
+            return DefaultTiles;
         }
 
         public update(options: VisualUpdateOptions) {
-            this.settings = Visual.parseSettings(options && options.dataViews && options.dataViews[0]);
-            console.log('Visual update', options);
-            if (typeof this.textNode !== "undefined") {
-                this.textNode.textContent = (this.updateCount++).toString();
-            }
+
+            //Making a viewmodel function along with daqta updation
+
+            
         }
 
-        private static parseSettings(dataView: DataView): VisualSettings {
-            return VisualSettings.parse(dataView) as VisualSettings;
-        }
+        // private static parseSettings(dataView: DataView): VisualSettings {
+        //     return VisualSettings.parse(dataView) as VisualSettings;
+        // }
 
         /** 
          * This function gets called for each of the objects defined in the capabilities files and allows you to select which of the 
          * objects and properties you want to expose to the users in the property pane.
          * 
          */
-        public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstance[] | VisualObjectInstanceEnumerationObject {
-            return VisualSettings.enumerateObjectInstances(this.settings || VisualSettings.getDefault(), options);
-        }
+        // public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstance[] | VisualObjectInstanceEnumerationObject {
+        //     return VisualSettings.enumerateObjectInstances(this.settings || VisualSettings.getDefault(), options);
+        // }
     }
 }

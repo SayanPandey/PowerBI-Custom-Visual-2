@@ -1,13 +1,28 @@
 {
     "dataRoles": [
         {
-            "displayName": "Category Data",
-            "name": "category",
+            "displayName": "Title",
+            "name": "Title",
             "kind": "Grouping"
         },
         {
-            "displayName": "Measure Data",
-            "name": "measure",
+            "displayName": "Key Pages",
+            "name": "Key Pages",
+            "kind": "Grouping"
+        },
+        {
+            "displayName": "Channels",
+            "name": "Channels",
+            "kind": "Grouping"
+        },
+        {
+            "displayName": "MarketPlace",
+            "name": "MarketPalce",
+            "kind": "Grouping"
+        },
+        {
+            "displayName": "Visits",
+            "name": "Visits",
             "kind": "Measure"
         }
     ],
@@ -60,20 +75,55 @@
     },
     "dataViewMappings": [
         {
-            "categorical": {
-                "categories": {
-                    "for": {
-                        "in": "category"
+            "conditions": [
+                {
+                    "Title":{
+                        "max":1
                     },
-                    "dataReductionAlgorithm": {
-                        "top": {}
+                    "Key Pages":{
+                        "max":1
+                    },
+                    "Channels":{
+                        "max":1
+                    },
+                    "MarketPlace":{
+                        "max":1
+                    },
+                    "Visits":{
+                        "max":1
                     }
-                },
+                }
+            ],
+            "categorical": {
+                "categories":{
+                    "select": [
+                    {
+                        "for": {
+                            "in": "Title"
+                        }
+                    },
+                    {
+                        "for": {
+                            "in": "Key Pages"
+                        }
+                    },
+                    {
+                        "for": {
+                            "in": "Channels"
+                        }
+                    },
+                    {
+                        "for": {
+                            "in": "MarketPalce"
+                        }
+                    }
+                ]
+            },
                 "values": {
                     "select": [
                         {
                             "bind": {
-                                "to": "measure"
+                                "to": "Visits"
                             }
                         }
                     ]

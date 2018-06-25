@@ -8187,11 +8187,23 @@
     border-color: #dee2e6;
   }
 }
-.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG p {
-  font-size: 20px;
-  font-weight: bold;
+.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .container-fluid {
+  padding: 30px;
+  padding-bottom: 30px;
 }
-.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG p em {
-  background: yellow;
-  padding: 5px;
+.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .row {
+  min-height: 100vh;
+}
+.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .data {
+  background: #F0F0F0;
+  min-height: 100vh;
+  padding: 0px;
+}
+.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .lines {
+  min-width: 11.11111%;
+}
+.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .title {
+  background-color: white;
+  min-width: 100%;
+  padding: 10px;
 }

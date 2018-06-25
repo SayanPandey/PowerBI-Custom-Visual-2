@@ -620,38 +620,21 @@ var powerbi;
                 "use strict";
                 var Visual = (function () {
                     function Visual(options) {
-                        console.log('Visual constructor', options);
                         this.target = options.element;
-                        this.updateCount = 0;
-                        if (typeof document !== "undefined") {
-                            var new_p = document.createElement("p");
-                            new_p.appendChild(document.createTextNode("Update count:"));
-                            var new_em = document.createElement("em");
-                            this.textNode = document.createTextNode(this.updateCount.toString());
-                            new_em.appendChild(this.textNode);
-                            new_p.appendChild(new_em);
-                            this.target.appendChild(new_p);
-                        }
-                        d3.select(this.target).append("div");
-                        $("div").text('heo');
+                        //Defining the html container
+                        this.Container = d3.select(this.target).append("div").classed("container-fluid", true);
+                        //Initializing the rows
+                        var row = this.Container.append("div").classed("row", true).attr({ 'id': 'row1' });
+                        //Appending the respective data and link divisions
+                        row.append("div").classed("col-2 data", true).append("div").classed("title", true).text(".").style({ color: 'white' }); //This piece of code basic ally creates a empty head
+                        row.append("div").classed("col-1 lines", true);
+                        row.append("div").classed("col-2 data", true).append("div").classed("title", true).text("Key Pages");
+                        row.append("div").classed("col-1 lines", true);
+                        row.append("div").classed("col-2 data", true).append("div").classed("title", true).text("Channels");
+                        row.append("div").classed("col-1 lines", true);
+                        row.append("div").classed("col-2 data", true).append("div").classed("title", true).text("MarketPlace");
                     }
                     Visual.prototype.update = function (options) {
-                        this.settings = Visual.parseSettings(options && options.dataViews && options.dataViews[0]);
-                        console.log('Visual update', options);
-                        if (typeof this.textNode !== "undefined") {
-                            this.textNode.textContent = (this.updateCount++).toString();
-                        }
-                    };
-                    Visual.parseSettings = function (dataView) {
-                        return flowChart7F4C7E415B37487CA5DE1179720CDCB0.VisualSettings.parse(dataView);
-                    };
-                    /**
-                     * This function gets called for each of the objects defined in the capabilities files and allows you to select which of the
-                     * objects and properties you want to expose to the users in the property pane.
-                     *
-                     */
-                    Visual.prototype.enumerateObjectInstances = function (options) {
-                        return flowChart7F4C7E415B37487CA5DE1179720CDCB0.VisualSettings.enumerateObjectInstances(this.settings || flowChart7F4C7E415B37487CA5DE1179720CDCB0.VisualSettings.getDefault(), options);
                     };
                     return Visual;
                 }());
