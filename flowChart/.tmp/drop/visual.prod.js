@@ -617,24 +617,84 @@ var powerbi;
         (function (visual) {
             var flowChart7F4C7E415B37487CA5DE1179720CDCB0;
             (function (flowChart7F4C7E415B37487CA5DE1179720CDCB0) {
-                "use strict";
                 var Visual = (function () {
                     function Visual(options) {
                         this.target = options.element;
+                    }
+                    //Data inserting code
+                    Visual.prototype.getViewModel = function (options) {
+                        //Fetching data
+                        var dv = options.dataViews;
+                        //Defining the Data Store
+                        var TempDataStore = {
+                            Row: []
+                        };
+                        //Default Void Check
+                        if (!dv
+                            || !dv[0]
+                            || !dv[0].categorical
+                            || !dv[0].categorical.categories
+                            || !dv[0].categorical.categories[0].source
+                            || !dv[0].categorical.values
+                            || !dv[0].metadata)
+                            return TempDataStore;
+                        //Assigning Quick references
+                        var Title = dv[0].categorical.categories[0].values;
+                        var KeyPages = dv[0].categorical.categories[1].values;
+                        var Channels = dv[0].categorical.categories[2].values;
+                        var MarketPlace = dv[0].categorical.categories[3].values;
+                        var Visits = dv[0].categorical.values[0].values;
+                        //Pushing data into Viewmodel
+                        for (var i = 0; i < Visits.length; i++) {
+                            TempDataStore.Row.push({
+                                Title: Title[i],
+                                KeyPages: KeyPages[i],
+                                Channels: Channels[i],
+                                MarketPlace: MarketPlace[i],
+                                Visits: Visits[i]
+                            });
+                        }
+                        return TempDataStore;
+                    };
+                    //Function to create a Panel
+                    Visual.prototype.createPanel = function (head, parentId, metric) {
+                        var Panel = d3.select("#" + parentId).append("div").classed('panel', true);
+                        var circle = Panel.append("svg").attr({ height: '40px', width: '40px' }).append("circle");
+                        circle.attr({
+                            cx: '20',
+                            cy: '20',
+                            r: '10',
+                            fill: 'none',
+                            'stroke-width': '2',
+                            stroke: 'black'
+                        });
+                        Panel.append('span').classed('head', true).text(head);
+                        Panel.append('div').classed('metric', true).text(metric);
+                    };
+                    Visual.prototype.update = function (options) {
+                        //Removing all DOM Elements
+                        d3.select(this.target).selectAll("div").remove();
                         //Defining the html container
                         this.Container = d3.select(this.target).append("div").classed("container-fluid", true);
                         //Initializing the rows
                         var row = this.Container.append("div").classed("row", true).attr({ 'id': 'row1' });
                         //Appending the respective data and link divisions
-                        row.append("div").classed("col-2 data", true).append("div").classed("title", true).text(".").style({ color: 'white' }); //This piece of code basic ally creates a empty head
+                        row.append("div").classed("col-2 data", true).attr({ id: 'Title' }).append("div").classed("title", true).text(".").style({ color: 'white' }); //This piece of code basic ally creates a empty head
                         row.append("div").classed("col-1 lines", true);
-                        row.append("div").classed("col-2 data", true).append("div").classed("title", true).text("Key Pages");
+                        row.append("div").classed("col-2 data", true).attr({ id: 'KeyPages' }).append("div").classed("title", true).text("Key Pages");
                         row.append("div").classed("col-1 lines", true);
-                        row.append("div").classed("col-2 data", true).append("div").classed("title", true).text("Channels");
+                        row.append("div").classed("col-2 data", true).attr({ id: 'Channels' }).append("div").classed("title", true).text("Channels");
                         row.append("div").classed("col-1 lines", true);
-                        row.append("div").classed("col-2 data", true).append("div").classed("title", true).text("MarketPlace");
-                    }
-                    Visual.prototype.update = function (options) {
+                        row.append("div").classed("col-2 data", true).attr({ id: 'MarketPlace' }).append("div").classed("title", true).text("MarketPlace");
+                        //Making a viewmodel function along with daqta updation
+                        this.getViewModel(options);
+                        this.createPanel('hello', 'Title', 50);
+                        this.createPanel('Hi', 'KeyPages', 150);
+                        this.createPanel('Hmm', 'KeyPages', 250);
+                        //Binding the data
+                        for (var i = 0; i < this.DataStore.Row.length; i++) {
+                            console.log(this.DataStore.Row[i].Title);
+                        }
                     };
                     return Visual;
                 }());

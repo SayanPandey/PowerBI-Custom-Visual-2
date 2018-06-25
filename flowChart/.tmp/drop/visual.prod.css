@@ -8202,3 +8202,19 @@
   min-width: 100%;
   padding: 10px;
 }
+.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .panel {
+  position: relative;
+  padding: 10px;
+}
+.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .panel .head {
+  position: absolute;
+  max-width: 50%;
+  top: 25%;
+}
+.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .panel .metric {
+  position: absolute;
+  max-width: 50%;
+  bottom: 0%;
+  left: 25%;
+  font-weight: 800;
+}
