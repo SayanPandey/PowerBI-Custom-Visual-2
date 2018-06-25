@@ -2,7 +2,7 @@
   "visual": {
     "name": "flowChart",
     "displayName": "FlowChart",
-    "guid": "flowChartF456E7392DD54175A06651FF3AEBC090",
+    "guid": "flowChart7F4C7E415B37487CA5DE1179720CDCB0",
     "visualClassName": "Visual",
     "version": "1.0.0",
     "description": "",
@@ -18,7 +18,9 @@
     "icon": "assets/icon.png"
   },
   "externalJS": [
-    "node_modules/powerbi-visuals-utils-dataviewutils/lib/index.js"
+    "node_modules/powerbi-visuals-utils-dataviewutils/lib/index.js",
+    "node_modules/d3/d3.min.js",
+    "node_modules/jquery/dist/jquery.min.js"
   ],
   "style": "style/visual.less",
   "capabilities": "capabilities.json",

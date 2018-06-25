@@ -44,7 +44,10 @@ module powerbi.extensibility.visual {
                 new_em.appendChild(this.textNode);
                 new_p.appendChild(new_em);
                 this.target.appendChild(new_p);
+                
             }
+            d3.select(this.target).append("div");
+            $("div").text('heo');
         }
 
         public update(options: VisualUpdateOptions) {
