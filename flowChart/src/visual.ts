@@ -94,6 +94,69 @@ module powerbi.extensibility.visual {
 
             return TempDataStore;
         }
+
+        //Utility function to remove special characters / ID making function
+        public removeSpl(x: string): string {
+            x = x.replace(/[&\/\\#,+()$~%.'":*?<>{}\s]/g, '');
+            return x;
+        }
+        //Utility function to get formatted value
+        public getFormatted(Quantity:number):string{
+            let value:string
+            if(Quantity>=1000000000){
+                value=(Quantity/1000000000).toFixed(1)+"B";
+                return value;
+            }
+           
+            else if(Quantity>=1000000){
+                value=(Quantity/1000000).toFixed(1)+"M";
+                return value;
+            }
+            else  if(Quantity>=1000){
+                value=(Quantity/1000).toFixed(1)+"K";
+                return value;
+            }
+            else
+                return ""+Quantity;
+        }
+
+        //Utility function to create Deafault load
+        public getDefaultLoadData(){
+
+            //Filtering and adding default load
+            for(let i=0;i<this.DataStore.Row.length;i++){
+
+                //Finding default value for first column
+                if(this.DataStore.Row[i].KeyPages=='All' && this.DataStore.Row[i].Channels=='All' && this.DataStore.Row[i].MarketPlace=='All'){
+                    if(!document.getElementById(this.removeSpl(this.DataStore.Row[i].Title))){
+                        this.createPanel(this.DataStore.Row[i].Title,'Title',this.DataStore.Row[i].Visits);
+                        this.DataStore.Row.splice(i,1);
+                        i=i-1;
+                    }
+                }
+                else if(this.DataStore.Row[i].KeyPages != 'All' && this.DataStore.Row[i].Channels=='All' && this.DataStore.Row[i].MarketPlace=='All'){
+                    if(!document.getElementById(this.removeSpl(this.DataStore.Row[i].KeyPages))){
+                        this.createPanel(this.DataStore.Row[i].KeyPages,'KeyPages',this.DataStore.Row[i].Visits);
+                        this.DataStore.Row.splice(i,1);
+                        i=i-1;
+                    }
+                }
+                else if(this.DataStore.Row[i].KeyPages == 'All' && this.DataStore.Row[i].Channels!='All' && this.DataStore.Row[i].MarketPlace=='All'){
+                    if(!document.getElementById(this.removeSpl(this.DataStore.Row[i].Channels))){
+                        this.createPanel(this.DataStore.Row[i].Channels,'Channels',this.DataStore.Row[i].Visits);
+                        this.DataStore.Row.splice(i,1);
+                        i=i-1;
+                    }
+                }
+                else if(this.DataStore.Row[i].KeyPages == 'All' && this.DataStore.Row[i].Channels=='All' && this.DataStore.Row[i].MarketPlace!='All'){
+                    if(!document.getElementById(this.removeSpl(this.DataStore.Row[i].MarketPlace))){    
+                        this.createPanel(this.DataStore.Row[i].MarketPlace,'MarketPlace',this.DataStore.Row[i].Visits);
+                        this.DataStore.Row.splice(i,1);
+                        i=i-1;
+                    }
+                }
+            }
+        }
         
         //Function to create a Panel
         public createPanel(head:string,parentId:string,metric:number){
@@ -107,10 +170,15 @@ module powerbi.extensibility.visual {
                 r:'10',
                 fill:'none',
                 'stroke-width':'2',
-                stroke:'black'
+                stroke:'black',
+                id:'#'+this.removeSpl(head)
             });
-            Panel.append('span').classed('head',true).text(head);
-            Panel.append('div').classed('metric',true).text(metric);
+            Panel.append('div').classed('head',true).text(head);
+            Panel.append('div').classed('metric',true).text(this.getFormatted(metric));
+            Panel.append('input').attr({
+                type:'hidden',
+                val:'0'
+            });
         }
         public update(options: VisualUpdateOptions) {
 
@@ -131,18 +199,13 @@ module powerbi.extensibility.visual {
              row.append("div").classed("col-2 data",true).attr({id:'MarketPlace'}).append("div").classed("title",true).text("MarketPlace");
 
             //Making a viewmodel function along with daqta updation
-            this.getViewModel(options);
-
-            this.createPanel('hello','Title',50);
-            this.createPanel('Hi','KeyPages',150);
-            this.createPanel('Hmm','KeyPages',250);
-            //Binding the data
-            for(let i=0;i<this.DataStore.Row.length;i++){
-                
-                
-                console.log(this.DataStore.Row[i].Title);
-            }
+            this.DataStore=this.getViewModel(options);
             
+            //Binding the data
+            console.log(this.DataStore);
+
+            //Finding and clearing default load VALUES
+            this.getDefaultLoadData()
         }
 
         // private static parseSettings(dataView: DataView): VisualSettings {

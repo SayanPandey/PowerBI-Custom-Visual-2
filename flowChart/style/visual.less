@@ -1,8 +1,8 @@
 @import (less) "node_modules/bootstrap/dist/css/bootstrap.css";
 
 .container-fluid{
-    padding:30px;
-    padding-bottom: 30px;
+    padding:20px;
+    background: #FAFAFA;
 }
 .row{
     min-height: 100vh;
@@ -16,23 +16,35 @@
     min-width: 11.11111%;
 }
 .title{
-    background-color: white;
+    background-color: #FAFAFA;
     min-width: 100%;
     padding:10px;
+    font-family: "Segoe UI",Regular;
+    font-size: 12px;
+
 }
 .panel{
     position: relative;
     padding:10px;
+    min-height:15vh;
 }
 .panel .head{
     position: absolute;
     max-width: 50%;
     top:25%;
+    left:50px;
+    //overflow-wrap: break-word
+    overflow: hidden;
+    font-family: "Segoe UI",Regular;
+    font-size: 14px;
+    color:#333333;
 }
 .panel .metric{
     position: absolute;
     max-width: 50%;
     bottom:0%;
     left:25%;
-    font-weight: 800;
+    font-family: "Segoe UI",Regular;
+    font-size: 18px;
+    color:#333333;
 }
