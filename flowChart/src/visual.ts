@@ -120,6 +120,31 @@ module powerbi.extensibility.visual {
                 return ""+Quantity;
         }
 
+        //Utility function to create line
+        public createLine(id1:string,id2:string){
+
+            //Coordinates for first deivision
+            var Div1=$("#"+id1);
+            var x1=Div1.offset().left+(Div1.width());
+            var y1=Div1.find('svg').offset().top;
+
+            //Coordinates for first deivision
+            var Div2=$("#"+id2);
+            var x2=Div2.offset().left;
+            var y2=Div2.find('svg').offset().top;
+
+            //Thecontrol points
+            var C1x=x1+(Div1.width()/2);
+
+            d3.select('#row1').append('svg').classed('connecting',true)//.append('path').attr({
+            //     d:"M57,122 C233,129 199,286 364,291",
+            //     'stroke-width': '8',
+            //     stroke:'black'
+            // })
+            //.html('<path d="M145,98 C281,105 234,246 400,250" />');
+            .html('<path d="M'+x1+','+y1+' C'+C1x+','+y1+' '+C1x+','+y2+' '+x2+','+y2+'" />');
+        }
+
         //Utility function to create Deafault load
         public getDefaultLoadData(){
 
@@ -161,7 +186,9 @@ module powerbi.extensibility.visual {
         //Function to create a Panel
         public createPanel(head:string,parentId:string,metric:number){
             
-            let Panel=d3.select("#"+parentId).append("div").classed('panel',true);
+            let Panel=d3.select("#"+parentId).append("div").classed('panel',true).attr({
+                id:this.removeSpl(head)
+            });
             
             let circle=Panel.append("svg").attr({height:'40px',width:'40px'}).append("circle");
             circle.attr({
@@ -171,7 +198,6 @@ module powerbi.extensibility.visual {
                 fill:'none',
                 'stroke-width':'2',
                 stroke:'black',
-                id:'#'+this.removeSpl(head)
             });
             Panel.append('div').classed('head',true).text(head);
             Panel.append('div').classed('metric',true).text(this.getFormatted(metric));
@@ -200,12 +226,12 @@ module powerbi.extensibility.visual {
 
             //Making a viewmodel function along with daqta updation
             this.DataStore=this.getViewModel(options);
-            
-            //Binding the data
-            console.log(this.DataStore);
 
             //Finding and clearing default load VALUES
             this.getDefaultLoadData()
+
+            this.createLine('TotalMPNVisits','partnermicrosoftcomisv-resource-hubsell-your-app');
+            this.createLine('partnermicrosoftcomisv-resource-hubsell-your-app','socialmedia');
         }
 
         // private static parseSettings(dataView: DataView): VisualSettings {

@@ -679,6 +679,21 @@ var powerbi;
                         else
                             return "" + Quantity;
                     };
+                    //Utility function to create line
+                    Visual.prototype.createLine = function (id1, id2) {
+                        //Coordinates for first deivision
+                        var Div1 = $("#" + id1);
+                        var x1 = Div1.offset().left + (Div1.width());
+                        var y1 = Div1.find('svg').offset().top;
+                        //Coordinates for first deivision
+                        var Div2 = $("#" + id2);
+                        var x2 = Div2.offset().left;
+                        var y2 = Div2.find('svg').offset().top;
+                        //Thecontrol points
+                        var C1x = x1 + (Div1.width() / 2);
+                        d3.select('#row1').append('svg').classed('connecting', true) //.append('path').attr({
+                            .html('<path d="M' + x1 + ',' + y1 + ' C' + C1x + ',' + y1 + ' ' + C1x + ',' + y2 + ' ' + x2 + ',' + y2 + '" />');
+                    };
                     //Utility function to create Deafault load
                     Visual.prototype.getDefaultLoadData = function () {
                         //Filtering and adding default load
@@ -716,7 +731,9 @@ var powerbi;
                     };
                     //Function to create a Panel
                     Visual.prototype.createPanel = function (head, parentId, metric) {
-                        var Panel = d3.select("#" + parentId).append("div").classed('panel', true);
+                        var Panel = d3.select("#" + parentId).append("div").classed('panel', true).attr({
+                            id: this.removeSpl(head)
+                        });
                         var circle = Panel.append("svg").attr({ height: '40px', width: '40px' }).append("circle");
                         circle.attr({
                             cx: '20',
@@ -725,7 +742,6 @@ var powerbi;
                             fill: 'none',
                             'stroke-width': '2',
                             stroke: 'black',
-                            id: '#' + this.removeSpl(head)
                         });
                         Panel.append('div').classed('head', true).text(head);
                         Panel.append('div').classed('metric', true).text(this.getFormatted(metric));
@@ -751,10 +767,10 @@ var powerbi;
                         row.append("div").classed("col-2 data", true).attr({ id: 'MarketPlace' }).append("div").classed("title", true).text("MarketPlace");
                         //Making a viewmodel function along with daqta updation
                         this.DataStore = this.getViewModel(options);
-                        //Binding the data
-                        console.log(this.DataStore);
                         //Finding and clearing default load VALUES
                         this.getDefaultLoadData();
+                        this.createLine('TotalMPNVisits', 'partnermicrosoftcomisv-resource-hubsell-your-app');
+                        this.createLine('partnermicrosoftcomisv-resource-hubsell-your-app', 'socialmedia');
                     };
                     return Visual;
                 }());

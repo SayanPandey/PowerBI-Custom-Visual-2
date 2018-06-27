@@ -8190,6 +8190,7 @@
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .container-fluid {
   padding: 20px;
   background: #FAFAFA;
+  position: relative;
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .row {
   min-height: 100vh;
@@ -8198,6 +8199,7 @@
   background: #F0F0F0;
   min-height: 100vh;
   padding: 0px;
+  z-index: 50;
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .lines {
   min-width: 11.11111%;
@@ -8232,4 +8234,14 @@
   font-family: "Segoe UI", Regular;
   font-size: 18px;
   color: #333333;
+}
+.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .connecting {
+  position: absolute;
+  min-width: 100%;
+  min-height: 100%;
+}
+.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG path {
+  stroke-width: 20;
+  fill: none;
+  stroke: #6BAFF2;
 }
