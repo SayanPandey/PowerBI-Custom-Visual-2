@@ -619,6 +619,7 @@ var powerbi;
             (function (flowChart7F4C7E415B37487CA5DE1179720CDCB0) {
                 var Visual = (function () {
                     function Visual(options) {
+                        this.Colors = ['#6BAFF2', '#6697DD', '#5578B7', '#3A5C84', '#1D3349', '#000000'];
                         this.target = options.element;
                     }
                     //Data inserting code
@@ -680,7 +681,7 @@ var powerbi;
                             return "" + Quantity;
                     };
                     //Utility function to create line
-                    Visual.prototype.createLine = function (id1, id2) {
+                    Visual.prototype.createLine = function (id1, id2, thickness, color) {
                         //Coordinates for first deivision
                         var Div1 = $("#" + id1);
                         var x1 = Div1.offset().left + (Div1.width());
@@ -691,8 +692,17 @@ var powerbi;
                         var y2 = Div2.find('svg').offset().top;
                         //Thecontrol points
                         var C1x = x1 + (Div1.width() / 2);
-                        d3.select('#row1').append('svg').classed('connecting', true) //.append('path').attr({
-                            .html('<path d="M' + x1 + ',' + y1 + ' C' + C1x + ',' + y1 + ' ' + C1x + ',' + y2 + ' ' + x2 + ',' + y2 + '" />');
+                        console.log(thickness);
+                        d3.select('#row1').append('svg').classed('connecting', true)
+                            .html('<path d="M' + x1 + ',' + y1 + ' C' + C1x + ',' + y1 + ' ' + C1x + ',' + y2 + ' ' + x2 + ',' + y2 + '"/>')
+                            .style({
+                            'stroke-width': thickness,
+                            'stroke': color
+                        });
+                        //finding circle and colouring it
+                        Div2.find('circle').attr({
+                            'stroke': color
+                        });
                     };
                     //Utility function to create Deafault load
                     Visual.prototype.getDefaultLoadData = function () {
@@ -701,28 +711,28 @@ var powerbi;
                             //Finding default value for first column
                             if (this.DataStore.Row[i].KeyPages == 'All' && this.DataStore.Row[i].Channels == 'All' && this.DataStore.Row[i].MarketPlace == 'All') {
                                 if (!document.getElementById(this.removeSpl(this.DataStore.Row[i].Title))) {
-                                    this.createPanel(this.DataStore.Row[i].Title, 'Title', this.DataStore.Row[i].Visits);
+                                    this.createPanel(this.DataStore.Row[i].Title, 'data1', this.DataStore.Row[i].Visits);
                                     this.DataStore.Row.splice(i, 1);
                                     i = i - 1;
                                 }
                             }
                             else if (this.DataStore.Row[i].KeyPages != 'All' && this.DataStore.Row[i].Channels == 'All' && this.DataStore.Row[i].MarketPlace == 'All') {
                                 if (!document.getElementById(this.removeSpl(this.DataStore.Row[i].KeyPages))) {
-                                    this.createPanel(this.DataStore.Row[i].KeyPages, 'KeyPages', this.DataStore.Row[i].Visits);
+                                    this.createPanel(this.DataStore.Row[i].KeyPages, 'data2', this.DataStore.Row[i].Visits);
                                     this.DataStore.Row.splice(i, 1);
                                     i = i - 1;
                                 }
                             }
                             else if (this.DataStore.Row[i].KeyPages == 'All' && this.DataStore.Row[i].Channels != 'All' && this.DataStore.Row[i].MarketPlace == 'All') {
                                 if (!document.getElementById(this.removeSpl(this.DataStore.Row[i].Channels))) {
-                                    this.createPanel(this.DataStore.Row[i].Channels, 'Channels', this.DataStore.Row[i].Visits);
+                                    this.createPanel(this.DataStore.Row[i].Channels, 'data3', this.DataStore.Row[i].Visits);
                                     this.DataStore.Row.splice(i, 1);
                                     i = i - 1;
                                 }
                             }
                             else if (this.DataStore.Row[i].KeyPages == 'All' && this.DataStore.Row[i].Channels == 'All' && this.DataStore.Row[i].MarketPlace != 'All') {
                                 if (!document.getElementById(this.removeSpl(this.DataStore.Row[i].MarketPlace))) {
-                                    this.createPanel(this.DataStore.Row[i].MarketPlace, 'MarketPlace', this.DataStore.Row[i].Visits);
+                                    this.createPanel(this.DataStore.Row[i].MarketPlace, 'data4', this.DataStore.Row[i].Visits);
                                     this.DataStore.Row.splice(i, 1);
                                     i = i - 1;
                                 }
@@ -747,9 +757,28 @@ var powerbi;
                         Panel.append('div').classed('metric', true).text(this.getFormatted(metric));
                         Panel.append('input').attr({
                             type: 'hidden',
-                            val: '0'
+                            val: metric
                         });
                     };
+                    //Utility function to create lines
+                    Visual.prototype.getLines = function (presentId, nowClicked) {
+                        //Getting all the panel in next data column
+                        var Panels = $('#data' + (nowClicked + 1)).find('.panel').find('input');
+                        //Initializing sum
+                        var sum = 0;
+                        //Creating lines
+                        for (var i = 0; i < Panels.length; i++) {
+                            sum += parseInt($(Panels[i]).attr('val'));
+                        }
+                        //Making the multiplier
+                        var multiplier = 30 / sum;
+                        //function to create lines
+                        for (var i = 0; i < Panels.length; i++) {
+                            var id_to_connect = Panels.eq(i).parent().attr('id');
+                            this.createLine(presentId, id_to_connect, parseInt($(Panels[i]).attr('val')) * multiplier, this.Colors[i]);
+                        }
+                    };
+                    //Update function
                     Visual.prototype.update = function (options) {
                         //Removing all DOM Elements
                         d3.select(this.target).selectAll("div").remove();
@@ -758,19 +787,26 @@ var powerbi;
                         //Initializing the rows
                         var row = this.Container.append("div").classed("row", true).attr({ 'id': 'row1' });
                         //Appending the respective data and link divisions
-                        row.append("div").classed("col-2 data", true).attr({ id: 'Title' }).append("div").classed("title", true).text(".").style({ color: 'white' }); //This piece of code basic ally creates a empty head
+                        row.append("div").classed("col-2 data", true).attr({ id: 'data1' }).append("div").classed("title", true).text(".").style({ color: 'white' }); //This piece of code basic ally creates a empty head
                         row.append("div").classed("col-1 lines", true);
-                        row.append("div").classed("col-2 data", true).attr({ id: 'KeyPages' }).append("div").classed("title", true).text("Key Pages");
+                        row.append("div").classed("col-2 data", true).attr({ id: 'data2' }).append("div").classed("title", true).text("Key Pages");
                         row.append("div").classed("col-1 lines", true);
-                        row.append("div").classed("col-2 data", true).attr({ id: 'Channels' }).append("div").classed("title", true).text("Channels");
+                        row.append("div").classed("col-2 data", true).attr({ id: 'data3' }).append("div").classed("title", true).text("Channels");
                         row.append("div").classed("col-1 lines", true);
-                        row.append("div").classed("col-2 data", true).attr({ id: 'MarketPlace' }).append("div").classed("title", true).text("MarketPlace");
+                        row.append("div").classed("col-2 data", true).attr({ id: 'data4' }).append("div").classed("title", true).text("MarketPlace");
                         //Making a viewmodel function along with daqta updation
                         this.DataStore = this.getViewModel(options);
                         //Finding and clearing default load VALUES
                         this.getDefaultLoadData();
-                        this.createLine('TotalMPNVisits', 'partnermicrosoftcomisv-resource-hubsell-your-app');
-                        this.createLine('partnermicrosoftcomisv-resource-hubsell-your-app', 'socialmedia');
+                        //Function to get lines;
+                        this.getLines("TotalMPNVisits", 1);
+                        this.getLines("partnermicrosoftcomapplication-buildermarket-and-sell", 2);
+                        this.getLines("campaign", 3);
+                        //Viewport scrolling 
+                        var innerHeight = window.innerHeight;
+                        var rowHeight = $("#row1").height();
+                        if (rowHeight > innerHeight)
+                            $(this.target).css({ "overflow-y": "scroll" });
                     };
                     return Visual;
                 }());

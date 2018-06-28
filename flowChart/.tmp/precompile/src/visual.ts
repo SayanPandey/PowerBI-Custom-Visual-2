@@ -50,6 +50,8 @@ module powerbi.extensibility.visual.flowChart7F4C7E415B37487CA5DE1179720CDCB0  {
         //Defining a object to store data
         private DataStore:ViewModel;
 
+        public Colors:string[]=['#6BAFF2','#6697DD','#5578B7','#3A5C84','#1D3349','#000000']
+
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;           
         }
@@ -121,7 +123,7 @@ module powerbi.extensibility.visual.flowChart7F4C7E415B37487CA5DE1179720CDCB0  {
         }
 
         //Utility function to create line
-        public createLine(id1:string,id2:string){
+        public createLine(id1:string,id2:string,thickness:number,color:string){
 
             //Coordinates for first deivision
             var Div1=$("#"+id1);
@@ -135,14 +137,18 @@ module powerbi.extensibility.visual.flowChart7F4C7E415B37487CA5DE1179720CDCB0  {
 
             //Thecontrol points
             var C1x=x1+(Div1.width()/2);
+            console.log(thickness);
+            d3.select('#row1').append('svg').classed('connecting',true)
+            .html('<path d="M'+x1+','+y1+' C'+C1x+','+y1+' '+C1x+','+y2+' '+x2+','+y2+'"/>')
+            .style({
+                'stroke-width':thickness,
+                'stroke':color
+            });
 
-            d3.select('#row1').append('svg').classed('connecting',true)//.append('path').attr({
-            //     d:"M57,122 C233,129 199,286 364,291",
-            //     'stroke-width': '8',
-            //     stroke:'black'
-            // })
-            //.html('<path d="M145,98 C281,105 234,246 400,250" />');
-            .html('<path d="M'+x1+','+y1+' C'+C1x+','+y1+' '+C1x+','+y2+' '+x2+','+y2+'" />');
+            //finding circle and colouring it
+            Div2.find('circle').attr({
+                'stroke':color
+            })
         }
 
         //Utility function to create Deafault load
@@ -154,28 +160,28 @@ module powerbi.extensibility.visual.flowChart7F4C7E415B37487CA5DE1179720CDCB0  {
                 //Finding default value for first column
                 if(this.DataStore.Row[i].KeyPages=='All' && this.DataStore.Row[i].Channels=='All' && this.DataStore.Row[i].MarketPlace=='All'){
                     if(!document.getElementById(this.removeSpl(this.DataStore.Row[i].Title))){
-                        this.createPanel(this.DataStore.Row[i].Title,'Title',this.DataStore.Row[i].Visits);
+                        this.createPanel(this.DataStore.Row[i].Title,'data1',this.DataStore.Row[i].Visits);
                         this.DataStore.Row.splice(i,1);
                         i=i-1;
                     }
                 }
                 else if(this.DataStore.Row[i].KeyPages != 'All' && this.DataStore.Row[i].Channels=='All' && this.DataStore.Row[i].MarketPlace=='All'){
                     if(!document.getElementById(this.removeSpl(this.DataStore.Row[i].KeyPages))){
-                        this.createPanel(this.DataStore.Row[i].KeyPages,'KeyPages',this.DataStore.Row[i].Visits);
+                        this.createPanel(this.DataStore.Row[i].KeyPages,'data2',this.DataStore.Row[i].Visits);
                         this.DataStore.Row.splice(i,1);
                         i=i-1;
                     }
                 }
                 else if(this.DataStore.Row[i].KeyPages == 'All' && this.DataStore.Row[i].Channels!='All' && this.DataStore.Row[i].MarketPlace=='All'){
                     if(!document.getElementById(this.removeSpl(this.DataStore.Row[i].Channels))){
-                        this.createPanel(this.DataStore.Row[i].Channels,'Channels',this.DataStore.Row[i].Visits);
+                        this.createPanel(this.DataStore.Row[i].Channels,'data3',this.DataStore.Row[i].Visits);
                         this.DataStore.Row.splice(i,1);
                         i=i-1;
                     }
                 }
                 else if(this.DataStore.Row[i].KeyPages == 'All' && this.DataStore.Row[i].Channels=='All' && this.DataStore.Row[i].MarketPlace!='All'){
                     if(!document.getElementById(this.removeSpl(this.DataStore.Row[i].MarketPlace))){    
-                        this.createPanel(this.DataStore.Row[i].MarketPlace,'MarketPlace',this.DataStore.Row[i].Visits);
+                        this.createPanel(this.DataStore.Row[i].MarketPlace,'data4',this.DataStore.Row[i].Visits);
                         this.DataStore.Row.splice(i,1);
                         i=i-1;
                     }
@@ -203,9 +209,34 @@ module powerbi.extensibility.visual.flowChart7F4C7E415B37487CA5DE1179720CDCB0  {
             Panel.append('div').classed('metric',true).text(this.getFormatted(metric));
             Panel.append('input').attr({
                 type:'hidden',
-                val:'0'
+                val:metric
             });
         }
+
+        //Utility function to create lines
+        public getLines(presentId:string,nowClicked:number){
+            //Getting all the panel in next data column
+            let Panels=$('#data'+(nowClicked+1)).find('.panel').find('input');
+            
+            //Initializing sum
+            let sum:number=0;
+
+            //Creating lines
+            for(let i=0;i<Panels.length;i++){
+                sum+=parseInt($(Panels[i]).attr('val'));
+            }
+            //Making the multiplier
+            let multiplier: number=30/sum;
+            //function to create lines
+
+            for(let i=0;i<Panels.length;i++){
+                let id_to_connect=Panels.eq(i).parent().attr('id');
+                this.createLine(presentId,id_to_connect,parseInt($(Panels[i]).attr('val'))*multiplier,this.Colors[i]);
+            }
+            
+        }
+
+        //Update function
         public update(options: VisualUpdateOptions) {
 
             //Removing all DOM Elements
@@ -216,22 +247,31 @@ module powerbi.extensibility.visual.flowChart7F4C7E415B37487CA5DE1179720CDCB0  {
              //Initializing the rows
              let row=this.Container.append("div").classed("row",true).attr({'id':'row1'});
              //Appending the respective data and link divisions
-             row.append("div").classed("col-2 data",true).attr({id:'Title'}).append("div").classed("title",true).text(".").style({color:'white'}); //This piece of code basic ally creates a empty head
+             row.append("div").classed("col-2 data",true).attr({id:'data1'}).append("div").classed("title",true).text(".").style({color:'white'}); //This piece of code basic ally creates a empty head
              row.append("div").classed("col-1 lines",true);
-             row.append("div").classed("col-2 data",true).attr({id:'KeyPages'}).append("div").classed("title",true).text("Key Pages");
+             row.append("div").classed("col-2 data",true).attr({id:'data2'}).append("div").classed("title",true).text("Key Pages");
              row.append("div").classed("col-1 lines",true);
-             row.append("div").classed("col-2 data",true).attr({id:'Channels'}).append("div").classed("title",true).text("Channels");
+             row.append("div").classed("col-2 data",true).attr({id:'data3'}).append("div").classed("title",true).text("Channels");
              row.append("div").classed("col-1 lines",true);
-             row.append("div").classed("col-2 data",true).attr({id:'MarketPlace'}).append("div").classed("title",true).text("MarketPlace");
+             row.append("div").classed("col-2 data",true).attr({id:'data4'}).append("div").classed("title",true).text("MarketPlace");
 
             //Making a viewmodel function along with daqta updation
             this.DataStore=this.getViewModel(options);
 
             //Finding and clearing default load VALUES
-            this.getDefaultLoadData()
+            this.getDefaultLoadData();
 
-            this.createLine('TotalMPNVisits','partnermicrosoftcomisv-resource-hubsell-your-app');
-            this.createLine('partnermicrosoftcomisv-resource-hubsell-your-app','socialmedia');
+            //Function to get lines;
+            this.getLines("TotalMPNVisits",1);
+            this.getLines("partnermicrosoftcomapplication-buildermarket-and-sell",2);
+            this.getLines("campaign",3);
+            
+            
+            //Viewport scrolling 
+            var innerHeight = window.innerHeight;
+            var rowHeight = $("#row1").height();
+            if (rowHeight > innerHeight)    
+                $(this.target).css({ "overflow-y": "scroll" });
         }
 
         // private static parseSettings(dataView: DataView): VisualSettings {

@@ -8188,13 +8188,14 @@
   position: relative;
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .row {
-  min-height: 100vh;
+  min-height: 100.5vh;
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .data {
   background: #F0F0F0;
   min-height: 100vh;
   padding: 0px;
   z-index: 50;
+  border: solid 8px #FAFAFA;
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .lines {
   min-width: 11.11111%;
@@ -8209,16 +8210,18 @@
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .panel {
   position: relative;
   padding: 10px;
-  min-height: 15vh;
+  min-height: 16vh;
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .panel .head {
   position: absolute;
-  max-width: 50%;
+  max-width: 60%;
   top: 25%;
   left: 50px;
-  overflow: hidden;
+  max-height: 8vh;
+  overflow-wrap: break-word;
+  overflow-y: hidden;
   font-family: "Segoe UI", Regular;
-  font-size: 14px;
+  font-size: 12px;
   color: #333333;
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .panel .metric {
@@ -8236,7 +8239,5 @@
   min-height: 100%;
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG path {
-  stroke-width: 20;
   fill: none;
-  stroke: #6BAFF2;
 }
