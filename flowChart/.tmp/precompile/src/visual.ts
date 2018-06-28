@@ -53,7 +53,7 @@ module powerbi.extensibility.visual.flowChart7F4C7E415B37487CA5DE1179720CDCB0  {
         public Colors:string[]=['#6BAFF2','#6697DD','#5578B7','#3A5C84','#1D3349','#000000']
 
         constructor(options: VisualConstructorOptions) {
-            this.target = options.element;           
+            this.target = options.element;     
         }
 
         //Data inserting code
@@ -123,7 +123,7 @@ module powerbi.extensibility.visual.flowChart7F4C7E415B37487CA5DE1179720CDCB0  {
         }
 
         //Utility function to create line
-        public createLine(id1:string,id2:string,thickness:number,color:string){
+        public createLine(id1:string,id2:string,thickness:number,color:string,nowClicked:number){
 
             //Coordinates for first deivision
             var Div1=$("#"+id1);
@@ -137,13 +137,14 @@ module powerbi.extensibility.visual.flowChart7F4C7E415B37487CA5DE1179720CDCB0  {
 
             //Thecontrol points
             var C1x=x1+(Div1.width()/2);
-            console.log(thickness);
-            d3.select('#row1').append('svg').classed('connecting',true)
-            .html('<path d="M'+x1+','+y1+' C'+C1x+','+y1+' '+C1x+','+y2+' '+x2+','+y2+'"/>')
+            let path=d3.select('#row1').append('svg').classed('connecting',true)
+            .html('<path d="M'+x1+','+y1+' C'+C1x+','+y1+' '+C1x+','+y2+' '+x2+','+y2+'" />')
             .style({
                 'stroke-width':thickness,
-                'stroke':color
+                'stroke':color,
+                "fill": "none"
             });
+            path.classed('Lines'+nowClicked,true);
 
             //finding circle and colouring it
             Div2.find('circle').attr({
@@ -185,6 +186,13 @@ module powerbi.extensibility.visual.flowChart7F4C7E415B37487CA5DE1179720CDCB0  {
                         this.DataStore.Row.splice(i,1);
                         i=i-1;
                     }
+                }
+                else{
+                    //This will make ids
+                    this.DataStore.Row[i].Title=this.removeSpl(this.DataStore.Row[i].Title);
+                    this.DataStore.Row[i].KeyPages=this.removeSpl(this.DataStore.Row[i].KeyPages);
+                    this.DataStore.Row[i].Channels=this.removeSpl(this.DataStore.Row[i].Channels);
+                    this.DataStore.Row[i].MarketPlace=this.removeSpl(this.DataStore.Row[i].MarketPlace);
                 }
             }
         }
@@ -231,11 +239,64 @@ module powerbi.extensibility.visual.flowChart7F4C7E415B37487CA5DE1179720CDCB0  {
 
             for(let i=0;i<Panels.length;i++){
                 let id_to_connect=Panels.eq(i).parent().attr('id');
-                this.createLine(presentId,id_to_connect,parseInt($(Panels[i]).attr('val'))*multiplier,this.Colors[i]);
+                this.createLine(presentId,id_to_connect,parseInt($(Panels[i]).attr('val'))*multiplier,this.Colors[i],nowClicked);
             }
             
         }
 
+        //Utility function to set values 
+        public setValue(id1:string,id2:string,metric:number){
+            let ID:string;
+            if(id1!='All' && id2!='All'){
+                ID=id2;
+            }
+            else if(id1!='All'){
+                ID=id1;
+            }else if(id2!='All'){
+                ID=id2;
+            }
+            $('#'+ID).find('.metric').text(this.getFormatted(metric));
+            $('#'+ID).find('input').val(metric);
+        }
+
+        //Utility function to animate lines
+        public animateLines(className:string){
+            $(className).each(function() {
+
+                var sequence = $('path', this);
+                var iter, vector, length;
+            
+                for (iter = 0; iter < sequence.length; iter++) {
+                vector = sequence[iter];
+                length = vector.getTotalLength();
+                $(vector).attr('data-length', length).css({'stroke-dashoffset': length, 'stroke-dasharray': length});
+                }
+            });
+
+            var sequence = $(className).find('path');
+            for(let i=0;i<sequence.length;i++){
+            var vector = sequence.eq(i);
+            var length = parseInt(vector.attr('data-length'));
+
+                vector.animate({'stroke-dashoffset': 0}, {
+            
+                    duration: 400,
+                    easing: 'linear',
+                });
+            }
+
+        }
+
+        //Lines to create filter
+        public filterData(Data:ViewModel,parentID:string): ViewModel{
+            for(let i=0;i<Data.Row.length;i++){
+                if(Data.Row[i].KeyPages!=parentID || Data.Row[i].Channels=='All' || Data.Row[i].MarketPlace=='All'){
+                   Data.Row.splice(i,1);
+                   i=i-1;
+                }
+            }
+            return Data;
+        }
         //Update function
         public update(options: VisualUpdateOptions) {
 
@@ -263,15 +324,69 @@ module powerbi.extensibility.visual.flowChart7F4C7E415B37487CA5DE1179720CDCB0  {
 
             //Function to get lines;
             this.getLines("TotalMPNVisits",1);
-            this.getLines("partnermicrosoftcomapplication-buildermarket-and-sell",2);
-            this.getLines("campaign",3);
+            this.animateLines('.Lines1');
+
+            //filtering functions and logics
+            //Firstly making a temporary filter
+            let TempDataStore:ViewModel=this.DataStore;
+            //Storing the context
+            let Context=this;
+
+            //Restoring visual
+            $('#data1').find('svg').click(function(){
+                Context.update(options);
+            })
+
+            //First level filter
+            $('#data2').find('svg').click(function(){
+
+                //Removing other lines
+                $('.Lines2').remove();
+                $('.Lines3').remove();
+
+                    let parentID=$(this).parent().attr('id').toString();
+                    for(let i=0;i<TempDataStore.Row.length;i++){
+                        if(TempDataStore.Row[i].KeyPages==parentID){
+                            Context.setValue(TempDataStore.Row[i].Channels,TempDataStore.Row[i].MarketPlace,TempDataStore.Row[i].Visits)
+                        }
+                    }
+                    //Making lines
+                    Context.getLines(parentID,2);
+                    Context.animateLines('.Lines2');
+
+                    //Filtering data for furthur clicks
+                    TempDataStore = Context.filterData(TempDataStore,parentID);
+                    console.log(TempDataStore);
+
+                    //Giving Click functionality to next level
+                    $('#data3').find('svg').click(function(){
+
+                        //Removing other lines
+                        $('.Lines3').remove();
+        
+                            let parentID=$(this).parent().attr('id').toString();
+                            for(let i=0;i<TempDataStore.Row.length;i++){
+                                if(TempDataStore.Row[i].Channels==parentID){
+                                    Context.setValue(TempDataStore.Row[i].Channels,TempDataStore.Row[i].MarketPlace,TempDataStore.Row[i].Visits)
+                                }
+                            }
+                            //Making lines
+                            Context.getLines(parentID,3);
+                            Context.animateLines('.Lines3');
+        
+                            //Filtering data for furthur clicks
+                            TempDataStore = Context.filterData(TempDataStore,parentID);
+                            console.log(TempDataStore);
+                        });
+            });
+            
             
             
             //Viewport scrolling 
-            var innerHeight = window.innerHeight;
-            var rowHeight = $("#row1").height();
-            if (rowHeight > innerHeight)    
-                $(this.target).css({ "overflow-y": "scroll" });
+            // var innerHeight = window.innerHeight;
+            // var rowHeight = $("#row1").height();
+            // if (rowHeight > innerHeight)    
+            //     $(this.target).css({ "overflow-y": "scroll" });
         }
 
         // private static parseSettings(dataView: DataView): VisualSettings {

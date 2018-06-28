@@ -8193,7 +8193,7 @@
   position: relative;
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .row {
-  min-height: 100.5vh;
+  max-height: 90%;
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .data {
   background: #F0F0F0;
@@ -8215,7 +8215,7 @@
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .panel {
   position: relative;
   padding: 10px;
-  min-height: 16vh;
+  min-height: 15%;
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .panel .head {
   position: absolute;
@@ -8242,7 +8242,4 @@
   position: absolute;
   min-width: 100%;
   min-height: 100%;
-}
-.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG path {
-  fill: none;
 }
