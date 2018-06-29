@@ -1,6 +1,6 @@
 module powerbi.visuals.plugins {
-    export var flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG = {
-        name: 'flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG',
+    export var flowChart7F4C7E415B37487CA5DE1179720CDCB0 = {
+        name: 'flowChart7F4C7E415B37487CA5DE1179720CDCB0',
         displayName: 'FlowChart',
         class: 'Visual',
         version: '1.0.0',
