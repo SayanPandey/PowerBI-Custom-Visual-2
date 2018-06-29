@@ -361,8 +361,6 @@ module powerbi.extensibility.visual {
 
                 //Replenishing the dataset
                 TempDataStore=Context.DataStore.Row.slice(0);
-                 
-                console.log(TempDataStore);
                 //Removing other lines
                 $('.Lines2').remove();
                 $('.Lines3').remove();
@@ -371,8 +369,15 @@ module powerbi.extensibility.visual {
                 $('#data3').find('.panel').remove();
                 $('#data4').find('.panel').remove();
 
+                //Locating the parent
+                let parentID=$(this).parent().attr('id').toString();
 
-                    let parentID=$(this).parent().attr('id').toString();
+                //Filling the circle
+                $('#data2').find('circle').attr({'fill':'none'});
+                $('#data3,#data4').find('circle').attr({'fill':'none','stroke':'black'});
+                let color=$(this).find('circle').attr('stroke');
+                $(this).find('circle').attr({'fill':color});
+
                     for(let i=0;i<TempDataStore.length;i++){
                         if(Context.removeSpl(TempDataStore[i].KeyPages)==parentID){
                             Context.setValue(Context.removeSpl(TempDataStore[i].Channels),Context.removeSpl(TempDataStore[i].MarketPlace),TempDataStore[i].Visits,'data3');
@@ -387,10 +392,14 @@ module powerbi.extensibility.visual {
                     //Making lines
                     Context.getLines(parentID,2);
                     Context.animateLines('.Lines2');
-                    console.log(TempDataStore);
 
                     //Giving Click functionality to next level
                     $('#data3').find('svg').click(function(){
+
+                        //Filling the circle
+                        $('#data3').find('circle').attr({'fill':'none'});                       
+                        let color=$(this).find('circle').attr('stroke');
+                        $(this).find('circle').attr({'fill':color});
 
                         //Removing other lines
                         $('.Lines3').remove();
@@ -407,9 +416,7 @@ module powerbi.extensibility.visual {
                             //Making lines
                             Context.getLines(parentID,3);
                             Context.animateLines('.Lines3');
-                            console.log(TempDataStore2);
-                    });
-               //Replenishing dataset     
+                    });   
             });
         }
     }

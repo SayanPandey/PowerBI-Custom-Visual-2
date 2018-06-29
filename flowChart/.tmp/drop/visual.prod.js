@@ -884,14 +884,19 @@ var powerbi;
                         $('#data2').find('svg').click(function () {
                             //Replenishing the dataset
                             TempDataStore = Context.DataStore.Row.slice(0);
-                            console.log(TempDataStore);
                             //Removing other lines
                             $('.Lines2').remove();
                             $('.Lines3').remove();
                             //Removing the charts as well
                             $('#data3').find('.panel').remove();
                             $('#data4').find('.panel').remove();
+                            //Locating the parent
                             var parentID = $(this).parent().attr('id').toString();
+                            //Filling the circle
+                            $('#data2').find('circle').attr({ 'fill': 'none' });
+                            $('#data3,#data4').find('circle').attr({ 'fill': 'none', 'stroke': 'black' });
+                            var color = $(this).find('circle').attr('stroke');
+                            $(this).find('circle').attr({ 'fill': color });
                             for (var i = 0; i < TempDataStore.length; i++) {
                                 if (Context.removeSpl(TempDataStore[i].KeyPages) == parentID) {
                                     Context.setValue(Context.removeSpl(TempDataStore[i].Channels), Context.removeSpl(TempDataStore[i].MarketPlace), TempDataStore[i].Visits, 'data3');
@@ -906,9 +911,12 @@ var powerbi;
                             //Making lines
                             Context.getLines(parentID, 2);
                             Context.animateLines('.Lines2');
-                            console.log(TempDataStore);
                             //Giving Click functionality to next level
                             $('#data3').find('svg').click(function () {
+                                //Filling the circle
+                                $('#data3').find('circle').attr({ 'fill': 'none' });
+                                var color = $(this).find('circle').attr('stroke');
+                                $(this).find('circle').attr({ 'fill': color });
                                 //Removing other lines
                                 $('.Lines3').remove();
                                 //Removing data as well
@@ -923,9 +931,7 @@ var powerbi;
                                 //Making lines
                                 Context.getLines(parentID, 3);
                                 Context.animateLines('.Lines3');
-                                console.log(TempDataStore2);
                             });
-                            //Replenishing dataset     
                         });
                     };
                     return Visual;
