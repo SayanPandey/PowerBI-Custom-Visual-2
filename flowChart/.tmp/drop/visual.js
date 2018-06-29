@@ -659,7 +659,7 @@ var powerbi;
                     };
                     //Utility function to remove special characters / ID making function
                     Visual.prototype.removeSpl = function (x) {
-                        x = x.replace(/[&\/\\#,+()$~%.'":*?<>{}\s]/g, '');
+                        x = x.replace(/[&\/\\#,+()$~%.'":=*?<>{}\s]/g, '');
                         return x;
                     };
                     //Utility function to get formatted value
@@ -682,20 +682,23 @@ var powerbi;
                     };
                     //Utility function to create line
                     Visual.prototype.createLine = function (id1, id2, thickness, color, nowClicked) {
+                        //Fixing minimum thresold
+                        if (thickness < 0.1)
+                            thickness = 0.1;
                         //Coordinates for first deivision
                         var Div1 = $("#" + id1);
                         var x1 = Div1.offset().left + (Div1.width());
-                        var y1 = Div1.find('svg').offset().top;
+                        var y1 = Div1.find('circle').offset().top + (Div1.find('circle').height() / 2);
                         //Coordinates for first deivision
                         var Div2 = $("#" + id2);
                         var x2 = Div2.offset().left;
-                        var y2 = Div2.find('svg').offset().top;
+                        var y2 = Div2.find('circle').offset().top + (Div2.find('circle').height() / 2);
                         //Thecontrol points
                         var C1x = x1 + (Div1.width() / 2);
                         var path = d3.select('#row1').append('svg').classed('connecting', true)
                             .html('<path d="M' + x1 + ',' + y1 + ' C' + C1x + ',' + y1 + ' ' + C1x + ',' + y2 + ' ' + x2 + ',' + y2 + '" />')
                             .style({
-                            'stroke-width': thickness,
+                            'stroke-width': thickness + 'vmin',
                             'stroke': color,
                             "fill": "none"
                         });
@@ -738,13 +741,6 @@ var powerbi;
                                     i = i - 1;
                                 }
                             }
-                            else {
-                                //This will make ids
-                                this.DataStore.Row[i].Title = this.removeSpl(this.DataStore.Row[i].Title);
-                                this.DataStore.Row[i].KeyPages = this.removeSpl(this.DataStore.Row[i].KeyPages);
-                                this.DataStore.Row[i].Channels = this.removeSpl(this.DataStore.Row[i].Channels);
-                                this.DataStore.Row[i].MarketPlace = this.removeSpl(this.DataStore.Row[i].MarketPlace);
-                            }
                         }
                     };
                     //Function to create a Panel
@@ -752,20 +748,20 @@ var powerbi;
                         var Panel = d3.select("#" + parentId).append("div").classed('panel', true).attr({
                             id: this.removeSpl(head)
                         });
-                        var circle = Panel.append("svg").attr({ height: '40px', width: '40px' }).append("circle");
+                        var circle = Panel.append("svg").attr({ height: '3vmax', width: '3vmax' }).append("circle");
                         circle.attr({
-                            cx: '20',
-                            cy: '20',
-                            r: '10',
+                            cx: '1.5vmax',
+                            cy: '1.5vmax',
+                            r: '1vmax',
                             fill: 'none',
-                            'stroke-width': '2',
+                            'stroke-width': '0.2vmax',
                             stroke: 'black',
                         });
                         Panel.append('div').classed('head', true).text(head);
                         Panel.append('div').classed('metric', true).text(this.getFormatted(metric));
                         Panel.append('input').attr({
                             type: 'hidden',
-                            val: metric
+                            value: metric
                         });
                     };
                     //Utility function to create lines
@@ -776,30 +772,48 @@ var powerbi;
                         var sum = 0;
                         //Creating lines
                         for (var i = 0; i < Panels.length; i++) {
-                            sum += parseInt($(Panels[i]).attr('val'));
+                            sum += parseInt($(Panels[i]).attr('value'));
                         }
                         //Making the multiplier
-                        var multiplier = 30 / sum;
+                        var multiplier = 6 / sum;
                         //function to create lines
                         for (var i = 0; i < Panels.length; i++) {
                             var id_to_connect = Panels.eq(i).parent().attr('id');
-                            this.createLine(presentId, id_to_connect, parseInt($(Panels[i]).attr('val')) * multiplier, this.Colors[i], nowClicked);
+                            this.createLine(presentId, id_to_connect, parseInt($(Panels[i]).attr('value')) * multiplier, this.Colors[i], nowClicked);
                         }
                     };
                     //Utility function to set values 
-                    Visual.prototype.setValue = function (id1, id2, metric) {
+                    Visual.prototype.setValue = function (id1, id2, metric, parentID) {
                         var ID;
-                        if (id1 != 'All' && id2 != 'All') {
-                            ID = id2;
+                        var setParent;
+                        switch (parentID) {
+                            case 'data3':
+                                if (id1 != 'All' && id2 != 'All') {
+                                    break;
+                                }
+                                else if (id1 != 'All' && id2 == 'All') {
+                                    ID = id1;
+                                    setParent = 'data3';
+                                }
+                                else if (id1 == 'All' && id2 != 'All') {
+                                    ID = id2;
+                                    setParent = 'data4';
+                                }
+                                this.createPanel(ID, setParent, metric);
+                                break;
+                            case 'data4':
+                                if (id2 == 'All') {
+                                    break;
+                                }
+                                else if (id2 != 'All') {
+                                    ID = id2;
+                                }
+                                this.createPanel(ID, parentID, metric);
+                                break;
                         }
-                        else if (id1 != 'All') {
-                            ID = id1;
-                        }
-                        else if (id2 != 'All') {
-                            ID = id2;
-                        }
-                        $('#' + ID).find('.metric').text(this.getFormatted(metric));
-                        $('#' + ID).find('input').val(metric);
+                        // this.createPanel(ID,parentID,metric);
+                        // $('#'+ID).find('.metric').text(this.getFormatted(metric));
+                        // $('#'+ID).find('input').val(metric);
                     };
                     //Utility function to animate lines
                     Visual.prototype.animateLines = function (className) {
@@ -853,11 +867,13 @@ var powerbi;
                         //Finding and clearing default load VALUES
                         this.getDefaultLoadData();
                         //Function to get lines;
-                        this.getLines("TotalMPNVisits", 1);
+                        this.getLines(this.removeSpl(this.DataStore.Row[0].Title), 1);
                         this.animateLines('.Lines1');
                         //filtering functions and logics
                         //Firstly making a temporary filter
-                        var TempDataStore = this.DataStore;
+                        var TempDataStore;
+                        var TempDataStore2;
+                        TempDataStore = this.DataStore.Row.slice(0);
                         //Storing the context
                         var Context = this;
                         //Restoring visual
@@ -866,44 +882,51 @@ var powerbi;
                         });
                         //First level filter
                         $('#data2').find('svg').click(function () {
+                            //Replenishing the dataset
+                            TempDataStore = Context.DataStore.Row.slice(0);
+                            console.log(TempDataStore);
                             //Removing other lines
                             $('.Lines2').remove();
                             $('.Lines3').remove();
+                            //Removing the charts as well
+                            $('#data3').find('.panel').remove();
+                            $('#data4').find('.panel').remove();
                             var parentID = $(this).parent().attr('id').toString();
-                            for (var i = 0; i < TempDataStore.Row.length; i++) {
-                                if (TempDataStore.Row[i].KeyPages == parentID) {
-                                    Context.setValue(TempDataStore.Row[i].Channels, TempDataStore.Row[i].MarketPlace, TempDataStore.Row[i].Visits);
+                            for (var i = 0; i < TempDataStore.length; i++) {
+                                if (Context.removeSpl(TempDataStore[i].KeyPages) == parentID) {
+                                    Context.setValue(Context.removeSpl(TempDataStore[i].Channels), Context.removeSpl(TempDataStore[i].MarketPlace), TempDataStore[i].Visits, 'data3');
+                                }
+                                else {
+                                    TempDataStore.splice(i, 1);
+                                    i = i - 1;
                                 }
                             }
+                            TempDataStore2 = TempDataStore;
+                            TempDataStore = Context.DataStore.Row.slice(0);
                             //Making lines
                             Context.getLines(parentID, 2);
                             Context.animateLines('.Lines2');
-                            //Filtering data for furthur clicks
-                            TempDataStore = Context.filterData(TempDataStore, parentID);
                             console.log(TempDataStore);
                             //Giving Click functionality to next level
                             $('#data3').find('svg').click(function () {
                                 //Removing other lines
                                 $('.Lines3').remove();
+                                //Removing data as well
+                                $('#data4').find('.panel').remove();
                                 var parentID = $(this).parent().attr('id').toString();
-                                for (var i = 0; i < TempDataStore.Row.length; i++) {
-                                    if (TempDataStore.Row[i].Channels == parentID) {
-                                        Context.setValue(TempDataStore.Row[i].Channels, TempDataStore.Row[i].MarketPlace, TempDataStore.Row[i].Visits);
+                                console.log(parentID);
+                                for (var i = 0; i < TempDataStore2.length; i++) {
+                                    if (Context.removeSpl(TempDataStore2[i].Channels) == parentID) {
+                                        Context.setValue(Context.removeSpl(TempDataStore2[i].Channels), Context.removeSpl(TempDataStore2[i].MarketPlace), TempDataStore2[i].Visits, 'data4');
                                     }
                                 }
                                 //Making lines
                                 Context.getLines(parentID, 3);
                                 Context.animateLines('.Lines3');
-                                //Filtering data for furthur clicks
-                                TempDataStore = Context.filterData(TempDataStore, parentID);
-                                console.log(TempDataStore);
+                                console.log(TempDataStore2);
                             });
+                            //Replenishing dataset     
                         });
-                        //Viewport scrolling 
-                        // var innerHeight = window.innerHeight;
-                        // var rowHeight = $("#row1").height();
-                        // if (rowHeight > innerHeight)    
-                        //     $(this.target).css({ "overflow-y": "scroll" });
                     };
                     return Visual;
                 }());

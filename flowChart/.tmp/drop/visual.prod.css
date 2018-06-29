@@ -8183,19 +8183,19 @@
   }
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .container-fluid {
-  padding: 20px;
+  padding: 1vmin;
   background: #FAFAFA;
   position: relative;
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .row {
-  max-height: 90%;
+  max-height: 100vmin;
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .data {
   background: #F0F0F0;
   min-height: 100vh;
-  padding: 0px;
+  padding: 0vmin;
   z-index: 50;
-  border: solid 8px #FAFAFA;
+  border: solid 1vmin #FAFAFA;
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .lines {
   min-width: 11.11111%;
@@ -8205,23 +8205,23 @@
   min-width: 100%;
   padding: 10px;
   font-family: "Segoe UI", Regular;
-  font-size: 12px;
+  font-size: 1.5vmax;
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .panel {
   position: relative;
-  padding: 10px;
-  min-height: 15%;
+  padding: 1vmin;
+  min-height: 15vmin;
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .panel .head {
   position: absolute;
   max-width: 60%;
-  top: 25%;
-  left: 50px;
+  top: 1vmax;
+  left: 5vmax;
   max-height: 8vh;
   overflow-wrap: break-word;
   overflow-y: hidden;
   font-family: "Segoe UI", Regular;
-  font-size: 12px;
+  font-size: 1.2vmax;
   color: #333333;
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .panel .metric {
@@ -8230,11 +8230,34 @@
   bottom: 0%;
   left: 25%;
   font-family: "Segoe UI", Regular;
-  font-size: 18px;
+  font-size: 1.8vmax;
   color: #333333;
+}
+.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG #data2 .panel {
+  min-height: 25vmin;
+}
+.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG #data2 .head {
+  position: absolute;
+  max-width: 60%;
+  max-height: 50vmin;
+}
+.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG #data2 .metric {
+  bottom: 1%;
+}
+.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG #data3 .panel {
+  min-height: 14vmin;
+  max-height: 14vmin;
+}
+.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG #data3 .head {
+  min-height: 5vmin;
+  max-height: 5vmin;
 }
 .visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG .connecting {
   position: absolute;
   min-width: 100%;
   min-height: 100%;
+}
+.visual-flowChart7F4C7E415B37487CA5DE1179720CDCB0_DEBUG #data1 circle {
+  stroke: #122584;
+  fill: #122584;
 }
