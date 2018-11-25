@@ -1,4 +1,4 @@
-# <img align="right" src="pictures/microsoft-power-bi_179k.640.jpg" alt="alt text" width="250" >  Custom Visual Development
+# Power BI Custom Visual Development
 
 ## <img align="right" src="pictures/microsoft_PNG15.png" alt="alt text" width="150" > Power BI
 
@@ -56,6 +56,7 @@ To be profound in developing **Custom Visuals in Power BI** these are the certai
 
 ![](pictures/html5-520.jpg)
 
+
 - **Web Development** concepts, aspects and techniques. **HTML5**  is the latest version of  Hypertext Markup Language, the code that describes web pages. It's  actually three kinds of code: **HTML,** which provides the structure;  **Cascading Style Sheets (CSS3)**, which take care of presentation; and  **JavaScript**, which makes things happen. 
 
   **JQuery** is a cross-platform JavaScript library designed to simplify  the client-side scripting of HTML. It is free, open-source software  using the permissive MIT License.  
@@ -66,17 +67,15 @@ To be profound in developing **Custom Visuals in Power BI** these are the certai
 
 <img align="right" src="pictures/microsoft-power-bi_179k.640.jpg" alt="alt text" width="350" >
 
-- **Power BI Desktop** lets you create a collection of queries, data  connections, and reports that can easily be shared with others. Power BI Desktop integrates proven Microsoft technologies – the powerful Query  engine, data modeling, and visualizations – and works seamlessly with  the online **Power BI service**. Moreover you can also get a lot of custom made visuals in the gallery as shown below.
 
-<img align="right" src="pictures/powerbi-visualsgallery.png" alt="alt text" width="550" >
+- **Power BI Desktop** lets you create a collection of queries, data  connections, and reports that can easily be shared with others. Power BI Desktop integrates proven Microsoft technologies – the powerful Query  engine, data modeling, and visualizations – and works seamlessly with  the online **Power BI service**.
+
 
 ## MAQ Software
 
 **MAQ Software** delivers innovative software solutions for Fortune 500 companies.  Using the latest agile engineering techniques in a focused and  disciplined manner,  accelerates software initiatives that enable the  customers to transform their businesses. It serves customers in  industries including technology, retail, energy, and healthcare.
 
 ![](pictures/maqsoftware_logo_fullcolor_822.png)
-
-
 
 > **MAQ Software, Hyderabad** had been my place for summer internship after 3rd year for eight weeks. Developing **Custom Visual for Power BI** had been my  sole project. This is my 2nd project that i developed since i had finished my first project before the stipulated time. Since i have been instructed not to get detail into the insights of it for **SECURITY REASONS** so i will only depict an abstract of what i worked on. 
 
